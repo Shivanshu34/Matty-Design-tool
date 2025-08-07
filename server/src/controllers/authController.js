@@ -6,7 +6,7 @@ import BlacklistedToken from "../models/BlacklistedToken.js";
 const signJwt = (user) => jwt.sign(
   { id: user._id, role: user.role },
   process.env.JWT_SECRET,
-  { expiresIn: '1d' } 
+  { expiresIn: '1d' }  
 );
 
 export const register = async (req, res, next) => {
@@ -25,15 +25,30 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) 
+
+    const user = await User.findOne({ 
+      $or: [{ email }, { name: email }] //{email} is a shorthand for {email : email}
+    });
+
+    if (!user || !(await user.comparePassword(password))) {
       return next(createError(401, 'Invalid credentials'));
+    }
+
     const token = signJwt(user);
-    res.json({ token, user: { id: user._id, name: user.name, email, role: user.role } });
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
     next(err);
   }
 };
+
 
 export const logout = async (req, res, next) => {
   try {

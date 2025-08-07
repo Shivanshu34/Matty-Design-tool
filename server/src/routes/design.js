@@ -4,7 +4,8 @@ import {
   getDesigns,
   createDesign,
   updateDesign,
-  deleteDesign
+  deleteDesign,
+  getDesignById
 } from '../controllers/designController.js';
 
 const router = express.Router();
@@ -13,12 +14,13 @@ const router = express.Router();
 router.use(verifyToken);
 
 router
-  .route('/')
-  .get(getDesigns)      // GET    /api/designs
+  .route('/') 
+  .get(getDesigns)      // GET    /api/designs 
   .post(createDesign);  // POST   /api/designs
 
 router
   .route('/:id')
+  .get(getDesignById)   // GET    /api/designs/:id
   .put(updateDesign)    // PUT    /api/designs/:id
   .delete(deleteDesign);// DELETE /api/designs/:id
 

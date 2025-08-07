@@ -1,5 +1,6 @@
 import Design from '../models/Design.js';
 import createError from '../utils/createError.js';
+import cloudinary from '../utils/cloudinary.js';
 
 /**
  * GET /api/designs
@@ -7,7 +8,7 @@ import createError from '../utils/createError.js';
  */
 export const getDesigns = async (req, res, next) => {
   try {
-    const designs = await Design.find({ userId: req.userId })
+    const designs = await Design.find({ userId: req.userId }) 
       .sort({ createdAt: -1 });
     res.json(designs);
   } catch (err) {
@@ -33,6 +34,26 @@ export const createDesign = async (req, res, next) => {
       thumbnailUrl
     });
     res.status(201).json(design);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * GET /api/designs/:id
+ * Fetch a single design by its ID, but only if it belongs to the current user.
+ */
+export const getDesignById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Find the design that matches both the ID and the current user
+    //console.log(id," ","User id:",req.userId);
+    const design = await Design.findOne({ _id: id, userId: req.userId });
+    if (!design) {
+      return next(createError(404, 'Design not found'));
+    }
+    //console.log(design);
+    res.json(design);
   } catch (err) {
     next(err);
   }
@@ -65,12 +86,21 @@ export const updateDesign = async (req, res, next) => {
 export const deleteDesign = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await Design.findOneAndDelete({
-      _id: id,
-      userId: req.userId
+    // only delete your own
+    const design = await Design.findOne({ _id: id, userId: req.userId });
+    if (!design) return next(createError(404, 'Design not found'));
+
+    // walk the JSON tree looking for image nodes with public_id
+    const children = design.jsonData.children || [];
+    children.forEach((el) => {
+      if (el?.type === 'image' && el.public_id) {
+        // fire-and-forget
+        cloudinary.uploader.destroy(el.public_id).catch(console.error); 
+      }
     });
-    if (!result) return next(createError(404, 'Design not found'));
-    res.json({ message: 'Design deleted' });
+
+    await design.deleteOne();
+    res.json({ message: 'Design and its images removed.' });
   } catch (err) {
     next(err);
   }
