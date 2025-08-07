@@ -26,12 +26,12 @@ app.use(express.json());
 // ─── ROUTES ──────────────────────────────────────────────────
 
 // Auth routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); 
 // Admin auth routes (if you need separate admin flows)
 app.use('/api/auth/admin', adminAuthRoutes);
 
 // Design CRUD routes (protected inside router)
-app.use('/api/designs', designRoutes); 
+app.use('/api/designs', designRoutes);  
 
 app.use('/api/uploads', uploadsRoutes);
 

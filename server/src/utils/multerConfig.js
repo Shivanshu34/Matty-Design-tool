@@ -7,9 +7,14 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'matty-designs',
-    format: async (req, file) => 'png',   // force PNG export
-    public_id: (req, file) => `${req.userId}_${Date.now()}`,
-  }
+    format: async (req, file) => 'png',   
+    public_id: (req, file) => `${req.userId || 'anon'}_${Date.now()}`,
+  },
 });
 
-export const upload = multer({ storage });
+// create the multer instance
+const upload = multer({ storage });
+
+// export it both as default and as a named “parser”
+export const parser = upload;
+export default upload;
