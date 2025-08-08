@@ -50,12 +50,10 @@ app.use((err, req, res, next) => {
 main().catch(err => console.error('❌ DB connection failed', err));
 
 // ─── SERVER STARTUP ───────────────────────────────────────────
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () =>
-    console.log(`🚀 Server running on http://localhost:${PORT}`)
-  );
-}
+const PORT = Number(process.env.PORT) || 4000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server listening on ${PORT}`);
+});
 
 // Export app for serverless/production (e.g. Vercel/Lambda)
 export default app;
