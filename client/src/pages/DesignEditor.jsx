@@ -159,7 +159,7 @@ const deleteSelected = async () => {
     try {
       // This returns { url, public_id }
       const { data } = await axios.post(
-        `https://matty-design-tool.onrender.com//api/uploads/image`,
+        `https://matty-design-tool.onrender.com/api/uploads/image`,
         fd,
         { headers: { Authorization: `Bearer ${token}` } }
       );
