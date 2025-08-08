@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import MainLayout from "./layouts/MainLayout";
 
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import RouteWrapper from "./pages/RouteWrapper";
 import Home from "./pages/Home";
